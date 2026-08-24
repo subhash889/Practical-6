@@ -1,0 +1,85 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+void printOptimalParens(const vector<vector<int>>& s, int i, int j, char& name) {
+    if (i == j) {
+        cout << name++;
+        return;
+    }
+    cout << "(";
+    printOptimalParens(s, i, s[i][j], name);
+    printOptimalParens(s, s[i][j] + 1, j, name);
+    cout << ")";
+}
+
+
+void matrixChainOrder(const vector<int>& p) {
+    int n = p.size() - 1; // Number of matrices
+    
+    
+    vector<vector<int>> m(n + 1, vector<int>(n + 1, 0));
+    
+  
+    vector<vector<int>> s(n + 1, vector<int>(n + 1, 0));
+
+    for (int l = 2; l <= n; l++) {
+        for (int i = 1; i <= n - l + 1; i++) {
+            int j = i + l - 1;
+            m[i][j] = INT_MAX;
+            
+            for (int k = i; k <= j - 1; k++) {
+                // q = cost/scalar multiplications
+                int q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
+                if (q < m[i][j]) {
+                    m[i][j] = q;
+                    s[i][j] = k;
+                }
+            }
+        }
+    }
+
+  
+    cout << "\n----------------------------------------\n";
+    cout << "Minimum number of multiplications is: " << m[1][n] << "\n";
+    
+    char name = 'A';
+    cout << "Optimal Parenthesization: ";
+    printOptimalParens(s, 1, n, name);
+    cout << "\n----------------------------------------\n";
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of matrices: ";
+    cin >> n;
+
+    if (n <= 0) {
+        cout << "Number of matrices must be greater than zero.\n";
+        return 0;
+    }
+
+    
+    vector<int> p(n + 1);
+    cout << "Enter the dimensions (total " << n + 1 << " values for " << n << " matrices):\n";
+    for (int i = 0; i <= n; i++) {
+        cout << "Dimension " << i << ": ";
+        cin >> p[i];
+    }
+
+    matrixChainOrder(p);
+
+    return 0;
+}
+OUTPUT:
+Enter the number of matrices: 3
+Enter the dimensions (total 4 values for 3 matrices):
+Dimension 0: 88
+Dimension 1: 15
+Dimension 2: 30
+Dimension 3: 44
+
+
+Minimum number of multiplications is: 77880
+Optimal Parenthesization: (A(BC))
